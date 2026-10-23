@@ -1,0 +1,23 @@
+<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><title>Галерея рисунков</title>
+<style>body{font-family:Segoe UI,sans-serif;background:#fffbea;color:#1d2a5b;margin:10px}.c{display:inline-block;vertical-align:top;margin:6px;padding:6px;border:1px solid #ccc;background:#fff;width:340px}.c canvas{display:block}.c small{display:block;font-size:11px;color:#555;max-height:44px;overflow:hidden}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;align-items:center;text-align:center;margin:0 .15em}.fr i{font-style:normal;border-bottom:2px solid currentColor;padding:0 .2em}.fr b{font-weight:inherit}</style></head><body>
+<div id="out"></div>
+<script src="../content.js"></script><script src="../content2.js"></script><script src="../content3.js"></script><script src="../content4.js"></script><script src="../formulas.js"></script><script src="../figures.js"></script>
+<script>
+const only = new URLSearchParams(location.search).get('t');
+const out = document.getElementById('out'); const seen = {};
+let n = 0;
+TOPIC_ORDER.forEach(id => {
+  if (only && id !== only) return;
+  for (let d = 1; d <= 3; d++) for (let k = 0; k < 30; k++) {
+    const t = makeTask(id, d); const sig = id + ':' + (t.fig ? t.fig.t + (t.fig.kind || '') : '') + d;
+    const has = t.fig || (t.choices && t.choices.some(c => typeof c !== 'string'));
+    if (!has) continue; const key = sig + (only ? k : ''); if (seen[key]) continue; seen[key] = 1;
+    const div = document.createElement('div'); div.className = 'c'; div.innerHTML = '<small>' + id + ' d' + d + ': ' + t.q + '</small>';
+    if (t.fig) { const cv = document.createElement('canvas'); div.appendChild(cv); const sz = figSize(t.fig, 330); drawFigure(cv, t.fig, sz[0], sz[1]); }
+    if (t.choices && t.choices.some(c => typeof c !== 'string')) t.choices.forEach((c, i) => { const cv = document.createElement('canvas'); cv.style.display = 'inline-block'; cv.style.outline = i === t.ans ? '3px solid green' : 'none'; div.appendChild(cv); drawFigure(cv, c.fig, 148, 108); });
+    out.appendChild(div); n++;
+  }
+});
+document.title = n + ' figs';
+</script></body></html>
